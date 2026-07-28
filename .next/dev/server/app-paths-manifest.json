@@ -1,0 +1,6 @@
+{
+  "/api/tickets/route": "app/api/tickets/route.js",
+  "/book-repair/page": "app/book-repair/page.js",
+  "/page": "app/page.js",
+  "/track-repair/page": "app/track-repair/page.js"
+}
