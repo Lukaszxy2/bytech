@@ -39,7 +39,7 @@ export async function POST(request) {
       )
     `;
   } catch (err) {
-    console.error('[v0] Error creating ticket:', err.message, 'code:', err.code, 'host:', process.env.PGHOST, 'user:', process.env.PGUSER, 'db:', process.env.PGDATABASE);
+    console.error('[v0] Error creating ticket:', err.message, 'code:', err.code);
     return NextResponse.json(
       { success: false, error: 'Could not submit your request. Please try again.' },
       { status: 500 }
