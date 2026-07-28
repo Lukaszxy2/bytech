@@ -42,16 +42,29 @@
   }
 
   /* ============================================================
-     PREMIUM ORANGE SCROLLBAR — pixel-accurate replica of
-     .button-primary: same radial hot-spot, same linear gradient
-     stops, same peach hairline border opacity, and bloom radii
-     that proportionally match the button's 26px / 60px spread.
+     PREMIUM ORANGE SCROLLBAR — exact replica of .button-outline-red
+     (the navbar CTA), not the hero button.
+
+     The navbar button's visual signature:
+       • Near-black fill with warm backdrop blur
+       • Gradient rim via ::before — #ffe6dc → #ff9068 → #ef5228
+         → #e8402c → #b9301d → #ff8155 at 132deg
+       • Inner warm glow: inset 0 0 26px -7px rgb(255 96 56 / 0.8)
+       • Outer bloom:     0 0 20px -6px rgb(232 64 44 / 0.55)
+       • Hover inner:     inset 0 0 32px -6px rgb(255 110 70 / 0.95)
+       • Hover outer:     0 0 34px -4px rgb(232 64 44 / 0.8)
+
+     Scrollbar thumbs can't use ::before, so the gradient rim is
+     reproduced with a 1px padding-box + border-box background stack:
+     a 1px transparent solid border creates the clip geometry, then
+     a gradient background covers both the content box (dark fill)
+     and the border box (gradient rim) via background-clip layers.
      ============================================================ */
 
-  /* Firefox — thumb color only; box-shadow isn't supported there */
+  /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #fb4d24 rgb(3 11 30 / 0.95);
+    scrollbar-color: #e8402c rgb(3 11 30 / 0.95);
   }
 
   /* WebKit / Blink (Chrome, Safari, Edge) */
@@ -60,14 +73,12 @@
     height: 8px;
   }
 
-  /* Dark, near-invisible rail with a recessed inset so the orange
-     thumb appears to float above the surface */
   ::-webkit-scrollbar-track {
     background: rgb(3 11 30 / 0.9);
     border-radius: 9999px;
     box-shadow:
-      inset 0 0 3px rgb(0 0 0 / 0.9),
-      inset 0 0 1px rgb(255 255 255 / 0.04);
+      inset 0 0 4px rgb(0 0 0 / 0.9),
+      inset 0 0 1px rgb(255 255 255 / 0.03);
   }
 
   ::-webkit-scrollbar-corner {
@@ -77,64 +88,53 @@
   ::-webkit-scrollbar-thumb {
     border-radius: 9999px;
 
-    /* Exact button-primary gradient stack:
-       1. Radial amber hot-spot from the top (72% 130% at 50% 6%)
-       2. Vertical linear from bright-orange → mid-orange → deep-red */
+    /* 1px transparent border gives border-box clip geometry for the rim */
+    border: 1px solid transparent;
+
+    /* Layer 1 (content-box): near-black fill matching button background
+       Layer 2 (border-box): the exact ::before gradient that forms the
+       glowing rim — #ffe6dc → #ff9068 → #ef5228 → #e8402c → #b9301d → #ff8155 */
     background-image:
-      radial-gradient(72% 130% at 50% 6%, rgba(255, 138, 92, 0.55) 0%, rgba(255, 138, 92, 0) 62%),
-      linear-gradient(180deg, #fb4d24 0%, #f2401a 46%, #e63212 100%);
+      linear-gradient(rgb(14 9 15 / 0.88), rgb(14 9 15 / 0.88)),
+      linear-gradient(132deg, #ffe6dc 0%, #ff9068 14%, #ef5228 34%, #e8402c 56%, #b9301d 76%, #ff8155 100%);
+    background-origin: content-box, border-box;
+    background-clip: content-box, border-box;
 
-    /* Exact button-primary border: peach hairline at 0.9 opacity */
-    border: 1px solid rgb(255 176 132 / 0.9);
-
-    /* Exact button-primary shadow stack, bloom scaled to thumb width:
-       - ring:         0 0 0 1px  (same as button)
-       - near glow:    0 0 26px   (same as button's 26px)
-       - far bloom:    0 0 60px   (same as button's 60px)
-       - top highlight: inset 0 1px 0 0  (same as button)
-       - bottom depth: inset 0 -10px 22px -12px  (same as button) */
+    /* Exact button-outline-red shadows:
+       inset warm glow + outer bloom */
     box-shadow:
-      0 0 0 1px rgb(255 120 70 / 0.18),
-      0 0 26px rgb(232 64 44 / 0.55),
-      0 0 60px -6px rgb(232 64 44 / 0.4),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.34),
-      inset 0 -10px 22px -12px rgb(120 20 6 / 0.7);
+      inset 0 0 26px -7px rgb(255 96 56 / 0.8),
+      0 0 20px -6px rgb(232 64 44 / 0.55);
 
     transition:
       box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-      background-image 280ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      background-image 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Hover: exact button-primary:hover shadow stack */
+  /* Hover: exact button-outline-red:hover shadow intensification
+     + ::before filter: brightness(1.18) mapped onto the rim gradient */
   ::-webkit-scrollbar-thumb:hover {
     background-image:
-      radial-gradient(72% 130% at 50% 6%, rgba(255, 138, 92, 0.7) 0%, rgba(255, 138, 92, 0) 55%),
-      linear-gradient(180deg, #fb4d24 0%, #f2401a 46%, #e63212 100%);
+      linear-gradient(rgb(30 12 12 / 0.92), rgb(30 12 12 / 0.92)),
+      linear-gradient(132deg, #fff0ea 0%, #ffac88 14%, #f26040 34%, #e8402c 56%, #c53520 76%, #ff9970 100%);
+    background-origin: content-box, border-box;
+    background-clip: content-box, border-box;
 
-    /* button-primary:hover border-color */
-    border-color: rgb(255 198 164 / 0.95);
-
-    /* button-primary:hover box-shadow: 40px near, 86px far bloom */
+    /* button-outline-red:hover shadows */
     box-shadow:
-      0 0 0 1px rgb(255 140 90 / 0.28),
-      0 0 40px rgb(232 64 44 / 0.78),
-      0 0 86px -4px rgb(232 64 44 / 0.55),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.42),
-      inset 0 -10px 22px -12px rgb(120 20 6 / 0.6);
+      inset 0 0 32px -6px rgb(255 110 70 / 0.95),
+      0 0 34px -4px rgb(232 64 44 / 0.8);
   }
 
-  /* Active: compressed, deeper — mirrors button-primary:active */
   ::-webkit-scrollbar-thumb:active {
     background-image:
-      linear-gradient(180deg, #f2401a 0%, #e63212 60%, #d42c0e 100%);
-    border-color: rgb(255 160 120 / 0.8);
+      linear-gradient(rgb(20 8 8 / 0.96), rgb(20 8 8 / 0.96)),
+      linear-gradient(132deg, #ffe6dc 0%, #ff9068 14%, #ef5228 34%, #e8402c 56%, #b9301d 76%, #ff8155 100%);
+    background-origin: content-box, border-box;
+    background-clip: content-box, border-box;
     box-shadow:
-      0 0 0 1px rgb(255 100 60 / 0.2),
-      0 0 18px rgb(232 64 44 / 0.7),
-      0 0 36px -4px rgb(232 64 44 / 0.45),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.22),
-      inset 0 -10px 22px -12px rgb(100 18 5 / 0.8);
+      inset 0 0 22px -6px rgb(255 96 56 / 0.9),
+      0 0 16px -4px rgb(232 64 44 / 0.6);
   }
 
   body {
