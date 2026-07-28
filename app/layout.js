@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import BackToTop from '@/components/BackToTop';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
       <body className="font-sans antialiased">
         {children}
         <BackToTop />
+        <SpeedInsights />
       </body>
     </html>
   );
