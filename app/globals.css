@@ -1,0 +1,517 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   DESIGN TOKENS — extracted from the hero reference.
+   Every section reuses these; none reuses a container shape.
+   ============================================================ */
+:root {
+  /* Brand */
+  --brand-navy: 10 26 61; /* #0A1A3D */
+  --brand-navy-deep: 3 11 30; /* #030B1E */
+  --brand-navy-lift: 14 22 48; /* #0E1630 — navy bloom behind the hero device */
+  --brand-red: 232 64 44; /* #E8402C */
+  --brand-red-bright: 255 106 56; /* #FF6A38 — top of the "Fix" gradient */
+  --brand-red-deep: 227 46 13; /* #E32E0D — bottom of the primary button */
+
+  /* Surfaces */
+  --background-primary: 3 11 30; /* #030B1E */
+  --background-secondary: 10 26 61; /* #0A1A3D */
+  --background-offwhite: 244 242 239; /* #F4F2EF */
+
+  /* Type */
+  --text-primary: 239 239 241; /* #EFEFF1 */
+  --text-muted: 169 178 198; /* #A9B2C6 */
+  --text-inverse: 11 16 32; /* #0B1020 */
+  --text-inverse-muted: 84 94 114; /* #545E72 */
+
+  /* Glass — the two channels every panel is built from */
+  --glass-surface: 255 255 255;
+  --glass-border: 255 255 255;
+
+  /* Motion — one timing language for the whole site */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-hover: 280ms;
+  --duration-entrance: 700ms;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: rgb(var(--background-primary));
+    color: rgb(var(--text-primary));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgb(var(--brand-red) / 0.85);
+    color: #fff;
+  }
+
+  /* Carousels and thumbnail rows scroll without a visible scrollbar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  /* ---------- Layout containers ---------- */
+  .container-site {
+    width: 100%;
+    max-width: 1344px;
+    margin-inline: auto;
+    padding-inline: 60px;
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: 1344px;
+    margin-inline: auto;
+    padding-inline: 36px;
+  }
+
+  @media (max-width: 768px) {
+    .container-site {
+      padding-inline: 16px;
+    }
+    .container-wide {
+      padding-inline: 16px;
+    }
+  }
+
+  /* ---------- Hero scale ----------
+     The hero is drawn against a 1344 x 752 reference. Below that it
+     stays fluid as before; above it the whole composition grows with
+     the screen instead of sitting in a fixed column with dead space
+     either side.
+
+     `--hero-u` is one reference pixel expressed as a real length, so a
+     95px headline becomes calc(95 * var(--hero-u)). It is exactly 1px
+     at the reference size, so nothing below 1345px changes.
+
+     Width drives the growth; height is taken as a second constraint so
+     a short wide monitor scales to fit rather than overflowing the
+     fold. The 2x ceiling only bites on 4K and above, where tracking
+     the width literally would make the headline absurd. */
+  :root {
+    --hero-u: 1px;
+  }
+
+  @media (min-width: 1345px) {
+    :root {
+      --hero-u: clamp(1px, min(100vw / 1344, 100vh / 752), 2px);
+    }
+  }
+
+  .container-hero {
+    width: 100%;
+    /* Normally the scaled reference width. On a short, very wide screen
+       the height constraint holds `u` down, which would letterbox the
+       hero — there the second term wins and the composition spreads
+       sideways instead of sitting in a narrow column. */
+    max-width: max(calc(1344 * var(--hero-u)), min(100%, 2400px));
+    margin-inline: auto;
+    padding-inline: calc(60 * var(--hero-u));
+  }
+
+  /* The navbar floats over the hero, so at the top of the home page it
+     tracks the hero's width — otherwise the logo drifts inward while
+     the headline moves out, inverting the reference alignment. Once
+     scrolled it returns to `container-wide` to line up with the
+     sections below. */
+  .container-nav-hero {
+    width: 100%;
+    max-width: max(calc(1344 * var(--hero-u)), min(100%, 2400px));
+    margin-inline: auto;
+    padding-inline: calc(36 * var(--hero-u));
+  }
+
+  @media (max-width: 768px) {
+    .container-hero {
+      padding-inline: 16px;
+    }
+    .container-nav-hero {
+      padding-inline: 16px;
+    }
+  }
+
+  /* ---------- GLASS FAMILY ----------
+     Three weights of the same material. Same hue and highlight
+     behaviour, different blur / border / shadow depth. */
+  .glass-panel-heavy {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--glass-surface) / 0.14) 0%,
+      rgb(var(--glass-surface) / 0.06) 46%,
+      rgb(var(--glass-surface) / 0.035) 100%
+    );
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgb(var(--glass-border) / 0.16);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.65), inset 0 1px 0 0 rgb(255 255 255 / 0.14);
+  }
+
+  .glass-panel-light {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--glass-surface) / 0.07) 0%,
+      rgb(var(--glass-surface) / 0.025) 100%
+    );
+    backdrop-filter: blur(14px) saturate(125%);
+    -webkit-backdrop-filter: blur(14px) saturate(125%);
+    border: 1px solid rgb(var(--glass-border) / 0.09);
+    box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.07);
+  }
+
+  .glass-panel-outline {
+    background-color: transparent;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgb(var(--glass-border) / 0.16);
+    box-shadow: none;
+  }
+
+  /* On the off-white testimonials section the glass inverts:
+     it tints dark against light instead of light against dark. */
+  .glass-on-light.glass-panel-heavy {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--brand-navy) / 0.055) 0%,
+      rgb(var(--brand-navy) / 0.02) 100%
+    );
+    border-color: rgb(var(--brand-navy) / 0.12);
+    box-shadow: 0 24px 60px -18px rgb(var(--brand-navy) / 0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.7);
+  }
+  .glass-on-light.glass-panel-light {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--brand-navy) / 0.04) 0%,
+      rgb(var(--brand-navy) / 0.015) 100%
+    );
+    border-color: rgb(var(--brand-navy) / 0.09);
+    box-shadow: 0 12px 32px -16px rgb(var(--brand-navy) / 0.18), inset 0 1px 0 0 rgb(255 255 255 / 0.6);
+  }
+  .glass-on-light.glass-panel-outline {
+    border-color: rgb(var(--brand-navy) / 0.14);
+  }
+
+  /* ---------- BUTTON VARIANTS ----------
+     Shared geometry: 14px radius, 15px/600 label, identical
+     hover timing. Only the material changes. */
+  .btn-base {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 64px;
+    padding-inline: 31px;
+    border-radius: 14px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    cursor: pointer;
+    isolation: isolate;
+    transition: transform var(--duration-hover) var(--ease-brand),
+      box-shadow var(--duration-hover) var(--ease-brand),
+      background-color var(--duration-hover) var(--ease-brand),
+      border-color var(--duration-hover) var(--ease-brand),
+      color var(--duration-hover) var(--ease-brand);
+  }
+
+  .btn-base:focus-visible {
+    outline: 2px solid rgb(var(--brand-red-bright));
+    outline-offset: 3px;
+  }
+
+  /* --- Primary: lit red slab with a bloom halo ---
+     Layers: base vertical gradient, a soft radial hot-spot in the
+     upper middle, a pale peach hairline border, and an outer bloom. */
+  .button-primary {
+    color: #fff;
+    background-image: radial-gradient(72% 130% at 50% 6%, rgba(255, 138, 92, 0.55) 0%, rgba(255, 138, 92, 0) 62%),
+      linear-gradient(180deg, #fb4d24 0%, #f2401a 46%, #e63212 100%);
+    border: 1px solid rgb(255 176 132 / 0.9);
+    box-shadow: 0 0 0 1px rgb(255 120 70 / 0.18), 0 0 26px rgb(var(--brand-red) / 0.55),
+      0 0 60px -6px rgb(var(--brand-red) / 0.4), 0 10px 26px -8px rgb(0 0 0 / 0.55),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.34), inset 0 -10px 22px -12px rgb(120 20 6 / 0.7);
+    text-shadow: 0 1px 2px rgb(120 22 8 / 0.35);
+  }
+  .button-primary:hover {
+    transform: scale(1.03);
+    border-color: rgb(255 198 164 / 0.95);
+    box-shadow: 0 0 0 1px rgb(255 140 90 / 0.28), 0 0 40px rgb(var(--brand-red) / 0.78),
+      0 0 86px -4px rgb(var(--brand-red) / 0.55), 0 14px 32px -8px rgb(0 0 0 / 0.6),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.42), inset 0 -10px 22px -12px rgb(120 20 6 / 0.6);
+  }
+  .button-primary:active {
+    transform: scale(0.99);
+  }
+
+  /* --- Secondary: dark glass, top-lit rim, corner wedge ---
+     Reference has three separable parts: a near-black navy fill, a
+     hairline that is near-white along the top edge and dims down the
+     sides, and a hard-edged lighter wedge in the top-left corner. */
+  .button-secondary {
+    color: rgb(var(--text-primary));
+    background-color: rgb(5 11 24 / 0.86);
+    backdrop-filter: blur(14px) saturate(125%);
+    -webkit-backdrop-filter: blur(14px) saturate(125%);
+    border: 1px solid transparent;
+    box-shadow: 0 16px 34px -16px rgb(0 0 0 / 0.8), inset 0 -1px 0 0 rgb(255 255 255 / 0.06);
+  }
+  /* Hairline: near-white at the top, dim at the sides, faint rim light
+     returning along the bottom edge. */
+  .button-secondary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      178deg,
+      rgb(255 255 255 / 0.72) 0%,
+      rgb(255 255 255 / 0.34) 18%,
+      rgb(255 255 255 / 0.14) 52%,
+      rgb(255 255 255 / 0.12) 82%,
+      rgb(255 255 255 / 0.4) 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+    transition: background var(--duration-hover) var(--ease-brand);
+  }
+  /* Corner wedge: a hard diagonal edge catching light top-left. */
+  .button-secondary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      126deg,
+      rgb(255 255 255 / 0.16) 0%,
+      rgb(255 255 255 / 0.1) 26%,
+      rgb(255 255 255 / 0.02) 38%,
+      rgb(255 255 255 / 0) 46%
+    );
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity var(--duration-hover) var(--ease-brand);
+  }
+  .button-secondary > * {
+    position: relative;
+    z-index: 2;
+  }
+  .button-secondary:hover {
+    transform: scale(1.03);
+    background-color: rgb(9 18 36 / 0.9);
+    box-shadow: 0 16px 34px -16px rgb(0 0 0 / 0.8), inset 0 -1px 0 0 rgb(255 255 255 / 0.1),
+      0 0 30px rgb(var(--brand-red) / 0.22);
+  }
+  .button-secondary:hover::before {
+    background: linear-gradient(
+      178deg,
+      rgb(255 255 255 / 0.9) 0%,
+      rgb(255 255 255 / 0.5) 18%,
+      rgb(255 255 255 / 0.24) 52%,
+      rgb(255 255 255 / 0.2) 82%,
+      rgb(255 255 255 / 0.55) 100%
+    );
+  }
+  .button-secondary:hover::after {
+    opacity: 1.4;
+  }
+  .button-secondary:active {
+    transform: scale(0.99);
+  }
+
+  /* --- Outline-red pill: the navbar CTA ---
+     Full-radius, gradient red rim that goes near-white at the top-left,
+     dark centre with warm light pooling inward from the ring. */
+  .button-outline-red {
+    color: #fff;
+    border-radius: 9999px;
+    background-color: rgb(14 9 15 / 0.6);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    border: 1px solid transparent;
+    box-shadow: inset 0 0 26px -7px rgb(255 96 56 / 0.8), 0 0 20px -6px rgb(var(--brand-red) / 0.55);
+  }
+  .button-outline-red::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      132deg,
+      #ffe6dc 0%,
+      #ff9068 14%,
+      #ef5228 34%,
+      #e8402c 56%,
+      #b9301d 76%,
+      #ff8155 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    transition: filter var(--duration-hover) var(--ease-brand);
+  }
+  .button-outline-red > * {
+    position: relative;
+    z-index: 1;
+  }
+  .button-outline-red:hover {
+    transform: scale(1.03);
+    background-color: rgb(30 12 12 / 0.7);
+    box-shadow: inset 0 0 32px -6px rgb(255 110 70 / 0.95), 0 0 34px -4px rgb(var(--brand-red) / 0.8);
+  }
+  .button-outline-red:hover::before {
+    filter: brightness(1.18);
+  }
+  .button-outline-red:active {
+    transform: scale(0.99);
+  }
+
+  /* Tertiary: label + arrow, no chrome at all. */
+  .button-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgb(var(--brand-red-bright));
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    transition: color var(--duration-hover) var(--ease-brand),
+      gap var(--duration-hover) var(--ease-brand);
+  }
+  .button-ghost:hover {
+    color: #fff;
+    gap: 16px;
+  }
+  .button-ghost .button-ghost-arrow {
+    transition: transform var(--duration-hover) var(--ease-brand);
+  }
+  .button-ghost:hover .button-ghost-arrow {
+    transform: translateX(4px);
+  }
+
+  .button-compact {
+    height: 44px;
+    padding-inline: 18px;
+    font-size: 0.9375rem;
+    border-radius: 12px;
+    gap: 9px;
+  }
+
+  /* ---------- Shared textures ---------- */
+  /* Faint circuit grid that sits over the dark sections. */
+  .texture-circuit {
+    background-image: linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 46px 46px;
+  }
+
+  .texture-dots {
+    background-image: radial-gradient(circle, rgb(255 255 255 / 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* --- Headline treatments ---
+     White runs carry a faint metallic falloff (pure white at the cap
+     line, cooling toward the baseline) plus a soft cast shadow. */
+  .text-metallic {
+    background-image: linear-gradient(180deg, #ffffff 0%, #f4f5f8 38%, #dfe3ea 72%, #cdd3de 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 10px rgb(0 0 0 / 0.5)) drop-shadow(0 1px 0 rgb(255 255 255 / 0.16));
+  }
+
+  /* The "Fix" treatment: vertical heat gradient, a bevel highlight
+     offset up-and-right, and a warm bloom. Reusable on any accent word. */
+  .text-gradient-red {
+    background-image: linear-gradient(180deg, #ff7a45 0%, #fb5620 40%, #ef3d14 72%, #e02a0c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-accent-forged {
+    filter: drop-shadow(1px -1px 0 rgb(255 214 178 / 0.5))
+      drop-shadow(0 0 18px rgb(255 90 40 / 0.55))
+      drop-shadow(0 0 46px rgb(232 64 44 / 0.35))
+      drop-shadow(0 3px 8px rgb(0 0 0 / 0.45));
+  }
+
+  /* Hairline divider used between stats and inside outline panels. */
+  .rule-glass {
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--glass-border) / 0.22) 22%,
+      rgb(var(--glass-border) / 0.22) 78%,
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  /* ---------- MOTION PRESETS (CSS side) ----------
+     Framer variants live in lib/motion.js; these cover the
+     non-React cases so the presets aren't tied to one shape. */
+  .hover-lift {
+    transition: transform var(--duration-hover) var(--ease-brand),
+      box-shadow var(--duration-hover) var(--ease-brand),
+      border-color var(--duration-hover) var(--ease-brand),
+      background-color var(--duration-hover) var(--ease-brand);
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px);
+  }
+
+  .hover-glow-red:hover {
+    border-color: rgb(var(--brand-red) / 0.55);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.65), 0 0 34px rgb(var(--brand-red) / 0.3),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.16);
+  }
+
+  .parallax-layer {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-float-slow,
+    .animate-pulse-trace,
+    .animate-scroll-cue {
+      animation: none !important;
+    }
+    .hover-lift:hover {
+      transform: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
