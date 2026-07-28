@@ -42,76 +42,99 @@
   }
 
   /* ============================================================
-     PREMIUM ORANGE SCROLLBAR — mirrors the .button-primary style
-     exactly: amber-to-deep-orange gradient, warm bloom, glassy
-     inner highlight, and a luminous peach hairline edge.
+     PREMIUM ORANGE SCROLLBAR — pixel-accurate replica of
+     .button-primary: same radial hot-spot, same linear gradient
+     stops, same peach hairline border opacity, and bloom radii
+     that proportionally match the button's 26px / 60px spread.
      ============================================================ */
 
-  /* Firefox */
+  /* Firefox — thumb color only; box-shadow isn't supported there */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #fb4d24 rgb(3 11 30 / 0.9);
+    scrollbar-color: #fb4d24 rgb(3 11 30 / 0.95);
   }
 
   /* WebKit / Blink (Chrome, Safari, Edge) */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
+  /* Dark, near-invisible rail with a recessed inset so the orange
+     thumb appears to float above the surface */
   ::-webkit-scrollbar-track {
-    background: rgb(3 11 30 / 0.75);
+    background: rgb(3 11 30 / 0.9);
     border-radius: 9999px;
-    /* Subtle inset groove so the track reads as a rail */
-    box-shadow: inset 0 0 4px rgb(0 0 0 / 0.6);
+    box-shadow:
+      inset 0 0 3px rgb(0 0 0 / 0.9),
+      inset 0 0 1px rgb(255 255 255 / 0.04);
   }
 
   ::-webkit-scrollbar-corner {
-    background: rgb(3 11 30 / 0.75);
+    background: rgb(3 11 30 / 0.9);
   }
 
   ::-webkit-scrollbar-thumb {
     border-radius: 9999px;
-    /* Vertical gradient: warm amber highlight → main orange → deep red-orange
-       matching button-primary's radial + linear stack */
+
+    /* Exact button-primary gradient stack:
+       1. Radial amber hot-spot from the top (72% 130% at 50% 6%)
+       2. Vertical linear from bright-orange → mid-orange → deep-red */
     background-image:
-      radial-gradient(72% 130% at 50% 6%, rgba(255, 170, 100, 0.6) 0%, rgba(255, 138, 92, 0) 62%),
-      linear-gradient(180deg, #fb6a38 0%, #fb4d24 40%, #f2401a 72%, #e63212 100%);
-    /* Peach hairline border matching button's `border: 1px solid rgb(255 176 132 / 0.9)` */
-    border: 1px solid rgb(255 176 132 / 0.7);
-    /* Outer bloom + inner glassy highlight matching button-primary box-shadow */
+      radial-gradient(72% 130% at 50% 6%, rgba(255, 138, 92, 0.55) 0%, rgba(255, 138, 92, 0) 62%),
+      linear-gradient(180deg, #fb4d24 0%, #f2401a 46%, #e63212 100%);
+
+    /* Exact button-primary border: peach hairline at 0.9 opacity */
+    border: 1px solid rgb(255 176 132 / 0.9);
+
+    /* Exact button-primary shadow stack, bloom scaled to thumb width:
+       - ring:         0 0 0 1px  (same as button)
+       - near glow:    0 0 26px   (same as button's 26px)
+       - far bloom:    0 0 60px   (same as button's 60px)
+       - top highlight: inset 0 1px 0 0  (same as button)
+       - bottom depth: inset 0 -10px 22px -12px  (same as button) */
     box-shadow:
-      0 0 0 1px rgb(255 120 70 / 0.15),
-      0 0 8px rgb(232 64 44 / 0.65),
-      0 0 18px -2px rgb(232 64 44 / 0.45),
-      inset 0 1px 0 0 rgb(255 255 255 / 0.32),
-      inset 0 -6px 10px -6px rgb(120 20 6 / 0.6);
-    transition: box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-                background-image 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      0 0 0 1px rgb(255 120 70 / 0.18),
+      0 0 26px rgb(232 64 44 / 0.55),
+      0 0 60px -6px rgb(232 64 44 / 0.4),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.34),
+      inset 0 -10px 22px -12px rgb(120 20 6 / 0.7);
+
+    transition:
+      box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-image 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* Hover: exact button-primary:hover shadow stack */
   ::-webkit-scrollbar-thumb:hover {
-    /* Intensified glow matching button-primary:hover box-shadow */
     background-image:
-      radial-gradient(72% 130% at 50% 6%, rgba(255, 180, 120, 0.75) 0%, rgba(255, 138, 92, 0) 55%),
-      linear-gradient(180deg, #ff7040 0%, #fb5428 40%, #f2451e 72%, #e83514 100%);
-    border-color: rgb(255 198 164 / 0.88);
+      radial-gradient(72% 130% at 50% 6%, rgba(255, 138, 92, 0.7) 0%, rgba(255, 138, 92, 0) 55%),
+      linear-gradient(180deg, #fb4d24 0%, #f2401a 46%, #e63212 100%);
+
+    /* button-primary:hover border-color */
+    border-color: rgb(255 198 164 / 0.95);
+
+    /* button-primary:hover box-shadow: 40px near, 86px far bloom */
     box-shadow:
-      0 0 0 1px rgb(255 140 90 / 0.25),
-      0 0 14px rgb(232 64 44 / 0.88),
-      0 0 28px -2px rgb(232 64 44 / 0.6),
+      0 0 0 1px rgb(255 140 90 / 0.28),
+      0 0 40px rgb(232 64 44 / 0.78),
+      0 0 86px -4px rgb(232 64 44 / 0.55),
       inset 0 1px 0 0 rgb(255 255 255 / 0.42),
-      inset 0 -6px 10px -6px rgb(120 20 6 / 0.5);
+      inset 0 -10px 22px -12px rgb(120 20 6 / 0.6);
   }
 
+  /* Active: compressed, deeper — mirrors button-primary:active */
   ::-webkit-scrollbar-thumb:active {
     background-image:
       linear-gradient(180deg, #f2401a 0%, #e63212 60%, #d42c0e 100%);
+    border-color: rgb(255 160 120 / 0.8);
     box-shadow:
       0 0 0 1px rgb(255 100 60 / 0.2),
-      0 0 10px rgb(232 64 44 / 0.7),
+      0 0 18px rgb(232 64 44 / 0.7),
+      0 0 36px -4px rgb(232 64 44 / 0.45),
       inset 0 1px 0 0 rgb(255 255 255 / 0.22),
-      inset 0 -4px 8px -4px rgb(100 18 5 / 0.65);
+      inset 0 -10px 22px -12px rgb(100 18 5 / 0.8);
   }
 
   body {
